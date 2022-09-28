@@ -11,7 +11,7 @@ def actual_data():
     markets = requests.get(url).json()
     data = markets['result']
     df = pd.DataFrame(data)
-    return pd
+    return df
 
 def individual(market_name):
     path = f'/markets/{market_name}'
