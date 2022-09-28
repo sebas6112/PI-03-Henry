@@ -11,7 +11,6 @@ def actual_data():
     markets = requests.get(url).json()
     data = markets['result']
     df = pd.DataFrame(data)
-    df = df.set_index('name')
     return df
 
 def individual(market_name):
