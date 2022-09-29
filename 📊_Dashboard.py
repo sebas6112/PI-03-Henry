@@ -150,5 +150,23 @@ while True:
                         value = df[df['name'] == mercado_actual]['bid'],
                         delta = f"{round((df[df['name'] == mercado_actual]['change1h'].values)[0]*100,2)}%",
         )
+            c2 = st.container()
+            c2.metric(
+                        label = 'Valor de apertura',
+                        value = df2['open'][-1],)
+            c2 = st.container()
+            c2.metric(
+                        label = 'Valor de cierre',
+                        value = df2['close'][-1],)
+            c4 = st.container()
+            c4.metric(
+                        label = 'Varianza',
+                        value = round(df2['close'].var(),2),
+            )
+            df2['media_movil'] = round(df2['close'].rolling(2).mean(),2)
+            c5 = st.container()
+            c5.metric(
+                        label = 'Media móvil',
+                        value = df2['media_movil'][-1],)
         time.sleep(1)
         

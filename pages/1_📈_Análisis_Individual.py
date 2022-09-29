@@ -22,7 +22,16 @@ st.set_page_config(
 st.sidebar.header("Análisis Individual")
 
 # Lista de mercados que nos interesan
-markets_to_use = ['BTC/USD', 'ETH/USD', 'USDT/USD', 'BNB/USD', 'XRP/USD', 'SOL/USD', 'DOGE/USD', 'DOT/USD', 'DAI/USD', 'MATIC/USD']
+e1 = st.sidebar.expander('Mercados a mostrar')
+
+with e1:
+    df1 = request.actual_data()
+    all_markets = df1['name'].tolist()
+    default_markets = ['BTC/USD', 'ETH/USD', 'USDT/USD', 'BNB/USD', 'XRP/USD', 'SOL/USD', 'DOGE/USD', 'DOT/USD', 'DAI/USD', 'MATIC/USD']
+    markets_to_use = st.multiselect("Seleccione los 10 mercados con los que desea trabajar",
+                                            options = all_markets,
+                                            default = default_markets,
+                                            )
 
 # Diccionario con el valor (en segundos) de la resolución para las consultas históricas
 resolution_dict = {"Cinco minutos":300,
@@ -77,7 +86,9 @@ with placeholder2.container():
 
 # Actualización de los datos en "tiempo real"
 while True:
-
+    df = request.actual_data()
+    df = df[df.name.isin(markets_to_use)]
+    df.reset_index(drop=True, inplace=True)
     # Se llena el tercer contenedor que tiene las gráficas y valores detallados del mercado elegido en la sección de filtros
     with placeholder3.container():
         # Se crean dos columnas: una grande para alojar la gráfica y otra pequeña para alojar los datos
@@ -119,9 +130,28 @@ while True:
         with col2:
             c1 = st.container()
             c1.metric(
-                        label = 'Mercado Actual',
-                        value = df2['open'][0],
+                        label = mercado_actual,
+                        value = df[df['name'] == mercado_actual]['bid'],
+                        delta = f"{round((df[df['name'] == mercado_actual]['change1h'].values)[0]*100,2)}%",
         )
+            c2 = st.container()
+            c2.metric(
+                        label = 'Valor de apertura',
+                        value = df2['open'][-1],)
+            c2 = st.container()
+            c2.metric(
+                        label = 'Valor de cierre',
+                        value = df2['close'][-1],)
+            c4 = st.container()
+            c4.metric(
+                        label = 'Varianza',
+                        value = round(df2['close'].var(),2),
+            )
+            df2['media_movil'] = round(df2['close'].rolling(2).mean(),2)
+            c5 = st.container()
+            c5.metric(
+                        label = 'Media móvil',
+                        value = df2['media_movil'][-1],)
             # c2 = st.container()
             # c2.metric(
             #             label = df2['name'],
