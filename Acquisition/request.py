@@ -36,3 +36,13 @@ def historical(market_name, start_year, start_month, start_day, resolution = 864
     df = df.set_index('date')
     df = df.drop(columns = ['startTime', 'time'])
     return df
+
+def historical_datetime(market_name, start_time, end_time, resolution = 86400):
+    path = f'/markets/{market_name}/candles?resolution={resolution}&start_time={start_time}&end_time={end_time}'
+    url = api_url + path
+    res = requests.get(url).json()
+    df = pd.DataFrame(res['result'])
+    df['date'] = pd.to_datetime(df['startTime'])
+    df = df.set_index('date')
+    df = df.drop(columns = ['startTime', 'time'])
+    return df
